@@ -47,6 +47,11 @@ public class BoardController {
     @DeleteMapping("/post/{id}")
     public ResponseMsgDto deleteBoard(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.deleteBoard(id,userDetails.getUser());
-        return new ResponseMsgDto("삭제 완료", HttpStatus.OK.value());
+        return new ResponseMsgDto( HttpStatus.OK.value(),"삭제 완료");
+    }
+
+    @PostMapping("/post/like/{id}")
+    public ResponseMsgDto boardLike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return boardService.boardLike(id, userDetails.getUser());
     }
 }

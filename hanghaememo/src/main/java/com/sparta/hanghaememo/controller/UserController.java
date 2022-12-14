@@ -26,7 +26,7 @@ public class UserController {
     public ResponseEntity<ResponseMsgDto> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
         userService.signup(signupRequestDto);
 //        return new ResponseMsgDto("회원가입 성공!", HttpStatus.OK.value());
-        return ResponseEntity.ok(new ResponseMsgDto("회원가입 완료", HttpStatus.OK.value()));
+        return ResponseEntity.ok(new ResponseMsgDto(HttpStatus.OK.value(),"회원가입 완료" ));
     }
 
 
@@ -34,7 +34,7 @@ public class UserController {
     public  ResponseEntity<ResponseMsgDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto, response);
 //        return new ResponseMsgDto("로그인 성공!", HttpStatus.OK.value());
-        return ResponseEntity.ok(new ResponseMsgDto("로그인 완료",HttpStatus.OK.value()));
+        return ResponseEntity.ok(new ResponseMsgDto(HttpStatus.OK.value(),"로그인 완료"));
     }
 
 

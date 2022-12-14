@@ -7,12 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
-
 public class CommentDto {
 
     //    private Long commentId;
-    private String commentContents;
+        private String commentContents;
 
 }
 

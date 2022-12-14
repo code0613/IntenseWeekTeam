@@ -24,10 +24,6 @@ public class CommentController {
         return commentService.addComment(commentDto, id, userDetails.getUser());
     }
 
-    @GetMapping("/comment/{id}")
-    public CommentResponseDto getComment(@PathVariable Long id) {
-        return commentService.getComment(id);
-    }
 
     // 댓글 수정
     @PutMapping("/comment/{id}")
@@ -39,6 +35,10 @@ public class CommentController {
     @DeleteMapping("/comment/{id}")
     public ResponseEntity<ResponseMsgDto> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         commentService.deleteComment(id, userDetails.getUser());
-        return ResponseEntity.ok(new ResponseMsgDto("삭제 성공",HttpStatus.OK.value()));
+        return ResponseEntity.ok(new ResponseMsgDto(HttpStatus.OK.value(),"삭제 성공"));
+    }
+    @PostMapping("/comment/like/{id}")
+    public ResponseMsgDto commentLike(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return commentService.commentLike(id, userDetails.getUser());
     }
 }

@@ -4,16 +4,16 @@ package com.sparta.hanghaememo.service;
 import com.sparta.hanghaememo.dto.BoardRequestDto;
 import com.sparta.hanghaememo.dto.BoardResponseDto;
 import com.sparta.hanghaememo.dto.CommentResponseDto;
-import com.sparta.hanghaememo.entity.Board;
-import com.sparta.hanghaememo.entity.Comment;
-import com.sparta.hanghaememo.entity.User;
-import com.sparta.hanghaememo.entity.UserRoleEnum;
+import com.sparta.hanghaememo.dto.ResponseMsgDto;
+import com.sparta.hanghaememo.entity.*;
 import com.sparta.hanghaememo.jwt.JwtUtil;
+import com.sparta.hanghaememo.repository.BoardLikeRepository;
 import com.sparta.hanghaememo.repository.BoardRepository;
 import com.sparta.hanghaememo.repository.CommentRepository;
 import com.sparta.hanghaememo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,31 +28,14 @@ public class BoardService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+
+    private final BoardLikeRepository boardLikeRepository;
     private final JwtUtil jwtUtil;
 
 
     @Transactional
     public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
-//        String token = jwtUtil.resolveToken(request);
-//        Claims claims;
-//
-//        if (token != null) {
-//            if (jwtUtil.validateToken(token)) {
-//                claims = jwtUtil.getUserInfoFromToken(token);
-//            } else {
-//                throw new IllegalArgumentException(("Token Error"));
-//
-//            }
-//            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-//                    () -> new IllegalArgumentException("사용자 정보가 존재하지 않습니다.")
-//            );
-//
-//
-//            Board board = boardRepository.save(new Board(requestDto, user.getId(), user.getUsername()));
-//            return new BoardResponseDto(board);
-//        } else {
-//            return null;
-//        }
+
         Board board = boardRepository.save(new Board(requestDto, user));
         return new BoardResponseDto(board);
     }
@@ -74,6 +57,14 @@ public class BoardService {
             boardResponseDtolist.add(new BoardResponseDto(board, commentResponseDtoList));
         }
         return boardResponseDtolist;
+    }
+
+    @Transactional(readOnly = true)
+    public BoardResponseDto getBoard (Long id){
+        Board board = boardRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("게시글을 찾을 수 없다.")
+        );
+        return new BoardResponseDto(board);
     }
 
     @Transactional
@@ -111,17 +102,20 @@ public class BoardService {
                     () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
             );
         }
-
         boardRepository.delete(board);
-
-
     }
 
-    @Transactional(readOnly = true)
-    public BoardResponseDto getBoard (Long id){
-        Board board = boardRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("게시글을 찾을 수 없다.")
-        );
-        return new BoardResponseDto(board);
+    @Transactional
+    public ResponseMsgDto boardLike(Long id, User user){
+        Board board = boardRepository.findById(id).orElseThrow();
+        if(boardLikeRepository.findByBoardAndUserId(board, user.getId()).isEmpty()){ // 보드라이크에 값이 있는지 확인
+            boardLikeRepository.save(new BoardLike(user, board)); // 없으면 저장
+            return new ResponseMsgDto(HttpStatus.OK.value(),"좋아요 성공");
+        }
+        else {
+            boardLikeRepository.deleteByBoardIdAndUserId(board.getId(),user.getId());// 있으면 삭제
+            return new ResponseMsgDto(HttpStatus.OK.value(),"좋아요 취소");
+        }
+
     }
 }
