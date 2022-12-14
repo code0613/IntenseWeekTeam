@@ -3,6 +3,8 @@ package com.sparta.hanghaememo.service;
 
 import com.sparta.hanghaememo.dto.*;
 import com.sparta.hanghaememo.entity.*;
+import com.sparta.hanghaememo.exception.ErrorCode;
+import com.sparta.hanghaememo.exception.RequestException;
 import com.sparta.hanghaememo.jwt.JwtUtil;
 import com.sparta.hanghaememo.repository.*;
 import io.jsonwebtoken.Claims;
@@ -53,7 +55,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardResponseDto getBoard (Long id){
         Board board = boardRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("게시글을 찾을 수 없다.")
+                () -> new RequestException(ErrorCode.NULL_CONTENTS_400)
         );
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
         for(Comment comment : board.getCommentList()){
@@ -67,12 +69,12 @@ public class BoardService {
        Board board;
         if(user.getRole().equals(UserRoleEnum.ADMIN)) {
             board = boardRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                    () ->  new RequestException(ErrorCode.NULL_CONTENTS_400)
 
             );
         }else {
             board = (Board) boardRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
+                    () ->  new RequestException(ErrorCode.NULL_USER_400)
             );
         }
         board.update(requestDto);
@@ -87,14 +89,14 @@ public class BoardService {
         //user 의 권한이 ADMIN 와 같다면,
         if(user.getRole().equals(UserRoleEnum.ADMIN)) {
             board = boardRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                    () -> new RequestException(ErrorCode.NULL_CONTENTS_400)
                     //() -> new RequestException(ErrorCode.게시글이_존재하지_않습니다_400)
             );
 
         } else {
             //user 의 권한이 ADMIN 이 아니라면, 아이디가 같은 유저만 수정 가능
             board = (Board) boardRepository.findByIdAndUserId(id, user.getId()).orElseThrow(
-                    () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
+                    () -> new RequestException(ErrorCode.NULL_COMMENT_400)
             );
         }
         boardRepository.delete(board);
@@ -102,7 +104,9 @@ public class BoardService {
 
     @Transactional
     public ResponseMsgDto boardLike(Long id, User user){
-        Board board = boardRepository.findById(id).orElseThrow();
+        Board board = boardRepository.findById(id).orElseThrow(
+                ()->new RequestException(ErrorCode.NULL_CONTENTS_400)
+        );
         if(boardLikeRepository.findByBoardAndUserId(board, user.getId()).isEmpty()){ // 보드라이크에 값이 있는지 확인
             boardLikeRepository.save(new BoardLike(user, board)); // 없으면 저장
             return new ResponseMsgDto(HttpStatus.OK.value(),"좋아요 성공");
