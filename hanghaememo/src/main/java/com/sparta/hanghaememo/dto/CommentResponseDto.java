@@ -19,7 +19,7 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment){
 
-        this.commentId = comment.getCommentId();
+        this.commentId = comment.getId();
         this.mId = comment.getBoard().getId();
         this.commentContents = comment.getCommentContents();
     }

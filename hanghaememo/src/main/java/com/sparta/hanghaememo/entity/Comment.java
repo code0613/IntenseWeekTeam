@@ -12,16 +12,16 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
+    @Column(nullable = false)
+    private String username;
     @JsonIgnore  //??@JsonIgnore: Response에 해당 필드가 제외된다
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)   //?
-    @JoinColumn(name = "Board_Id")   //외래 키 매핑 시 사용 (name = 매핑할 외래키 이름)
+    @ManyToOne(fetch = FetchType.LAZY)   //?
+//    @JoinColumn(name = "Board_Id")   //외래 키 매핑 시 사용 (name = 매핑할 외래키 이름)
     private Board board;
 
     @JsonIgnore
@@ -29,18 +29,11 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-
-
-
-
     @Column(nullable = false)
     private String commentContents;
 
-//    @Column(nullable = false)
-//    private String commentUsername;
-
-
-    public Comment (CommentDto commentDto, User user, Board board) {  //
+    public Comment (CommentDto commentDto, User user, Board board) {
+        this.username = user.getUsername();
         this.commentContents = commentDto.getCommentContents();
         this.board = board;
         this.user = user;

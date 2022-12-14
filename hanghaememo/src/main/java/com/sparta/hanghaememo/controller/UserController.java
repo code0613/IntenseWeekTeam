@@ -12,26 +12,29 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
-@Controller  //33번 라인, 15라인 지우고 @RestController
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class UserController {
 
     private final UserService userService;
 
-    @ResponseBody
+
     @PostMapping("/signup")
-    public ResponseMsgDto signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseEntity<ResponseMsgDto> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
         userService.signup(signupRequestDto);
-        return new ResponseMsgDto("회원가입 성공!", HttpStatus.OK.value());
+//        return new ResponseMsgDto("회원가입 성공!", HttpStatus.OK.value());
+        return ResponseEntity.ok(new ResponseMsgDto("회원가입 완료", HttpStatus.OK.value()));
     }
 
-    @ResponseBody
+
     @PostMapping("/login")
-    public ResponseMsgDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public  ResponseEntity<ResponseMsgDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto, response);
-        return new ResponseMsgDto("로그인 성공!", HttpStatus.OK.value());
+//        return new ResponseMsgDto("로그인 성공!", HttpStatus.OK.value());
+        return ResponseEntity.ok(new ResponseMsgDto("로그인 완료",HttpStatus.OK.value()));
     }
 
 

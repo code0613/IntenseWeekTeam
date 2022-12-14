@@ -9,10 +9,12 @@ import com.sparta.hanghaememo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Optional;
 
 
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil; //의존성 주입
 
     // ADMIN_TOKEN
@@ -29,9 +32,10 @@ public class UserService {
 
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public void signup(@Valid SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
-        String password = signupRequestDto.getPassword();
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());   //저장하기 전에 password 를 Encoder 한다
+//        String password = signupRequestDto.getPassword();
 
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
@@ -59,10 +63,16 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
-        // 비밀번호 확인
-        if(!user.getPassword().equals(password)){
+
+
+        if(!passwordEncoder.matches(password, user.getPassword())) {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+
+//        // 비밀번호 확인
+//        if(!user.getPassword().equals(password)){
+//            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
     }
