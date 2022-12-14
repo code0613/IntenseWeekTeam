@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
+import java.util.List;
 
 
 @Getter
@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Board extends Timestamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -26,13 +26,18 @@ public class Board extends Timestamped {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private Long userId;
-    public Board(BoardRequestDto requestDto, Long userid, String username) {
-        this.username = username;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "board",cascade = CascadeType.REMOVE)
+    private List<Comment> commentList;
+
+    public Board(BoardRequestDto requestDto, User user) {
+        this.username = user.getUsername();
         this.content = requestDto.getContent();
         this.title = requestDto.getTitle();
-        this.userId = userid;
+        this.user = user;
 
         }
 
