@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -53,7 +54,8 @@ public class WebSecurityConfig {
         //permitAll() 를 사용해서, 이런 URL 들을 인증하지 않고 실행 할 수 있게 함
         http.authorizeRequests()
 //                .antMatchers("/**").permitAll()
-                .antMatchers("/api/auth/**").permitAll() //사용
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/**").permitAll()//사용
 //                .antMatchers("/api/search").permitAll()
 //                .antMatchers("/api/shop").permitAll()
 

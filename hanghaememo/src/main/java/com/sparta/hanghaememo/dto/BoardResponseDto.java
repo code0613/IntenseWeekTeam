@@ -16,18 +16,13 @@ public class BoardResponseDto {
     private String username;
     private String content;
     private String title;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-
     private List<CommentResponseDto> commentList;
-
+    private int boardCount;
     public BoardResponseDto(Board board) {
         this.id = board.getId();
         this.username = board.getUsername();
         this.content = board.getContent();
         this.title = board.getTitle();
-        this.createdAt = board.getCreatedAt();
-        this.modifiedAt = board.getModifiedAt();
         }
 
     public BoardResponseDto(Board board, List<CommentResponseDto> commentList) {      //매개변수를 가지는 생성자
@@ -35,8 +30,7 @@ public class BoardResponseDto {
         this.title = board.getTitle();
         this.content = board.getContent();
         this.username = board.getUsername();
-        this.createdAt = board.getCreatedAt();
-        this.modifiedAt = board.getModifiedAt();
+        this.boardCount = commentList.size();
         this.commentList = commentList;
 
     }

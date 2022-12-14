@@ -13,15 +13,21 @@ import lombok.NoArgsConstructor;
 public class CommentResponseDto {
 
     private Long commentId;
-    private Long mId;
-
     private String commentContents;
+    private int commentLikeCount;
 
     public CommentResponseDto(Comment comment){
 
         this.commentId = comment.getId();
-        this.mId = comment.getBoard().getId();
         this.commentContents = comment.getCommentContents();
+    }
+
+    public CommentResponseDto(Comment comment, int commentLike){
+
+        this.commentId= comment.getId();
+        this.commentContents = comment.getCommentContents();
+        this.commentLikeCount = commentLike;
+
     }
 }
 

@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class ResponseMsgDto {
 
 
     private String msg ;
     private int status ;
+
+    public ResponseMsgDto(int statusCode, String msg){
+        this.status = statusCode;
+        this.msg = msg;
+    }
 }
