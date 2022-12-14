@@ -1,16 +1,10 @@
 package com.sparta.hanghaememo.service;
 
 
-import com.sparta.hanghaememo.dto.BoardRequestDto;
-import com.sparta.hanghaememo.dto.BoardResponseDto;
-import com.sparta.hanghaememo.dto.CommentResponseDto;
-import com.sparta.hanghaememo.dto.ResponseMsgDto;
+import com.sparta.hanghaememo.dto.*;
 import com.sparta.hanghaememo.entity.*;
 import com.sparta.hanghaememo.jwt.JwtUtil;
-import com.sparta.hanghaememo.repository.BoardLikeRepository;
-import com.sparta.hanghaememo.repository.BoardRepository;
-import com.sparta.hanghaememo.repository.CommentRepository;
-import com.sparta.hanghaememo.repository.UserRepository;
+import com.sparta.hanghaememo.repository.*;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +23,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
 
+    private final CommentLikeRepository commentLikeRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final JwtUtil jwtUtil;
 
@@ -43,20 +38,16 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards() {
         List<Board> boardList = boardRepository.findAllByOrderByModifiedAtDesc();
-
-        List<BoardResponseDto> boardResponseDtolist = new ArrayList<>();
+        List<BoardResponseDto> boardResponseDto = new ArrayList<>();
 
         for (Board board : boardList){
-
-            List<Comment> commentList = commentRepository.findByBoard(board);
             List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-
-            for (Comment comment : commentList) {
-                commentResponseDtoList.add(new CommentResponseDto(comment));
+            for (Comment comment : board.getCommentList()) {
+                commentResponseDtoList.add(new CommentResponseDto(comment,commentLikeRepository.countAllByCommentId(comment.getId()))); //좋아요 개수 확인
             }
-            boardResponseDtolist.add(new BoardResponseDto(board, commentResponseDtoList));
+            boardResponseDto.add(new BoardResponseDto(board, commentResponseDtoList));
         }
-        return boardResponseDtolist;
+        return boardResponseDto;
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +55,11 @@ public class BoardService {
         Board board = boardRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("게시글을 찾을 수 없다.")
         );
-        return new BoardResponseDto(board);
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        for(Comment comment : board.getCommentList()){
+            commentResponseDtoList.add(new CommentResponseDto(comment,commentLikeRepository.countAllByCommentId(comment.getId())));
+        }
+        return new BoardResponseDto(board,commentResponseDtoList);
     }
 
     @Transactional

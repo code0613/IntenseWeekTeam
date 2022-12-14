@@ -37,6 +37,8 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String commentContents;
 
+
+
     public Comment (CommentDto commentDto, User user, Board board) {
         this.username = user.getUsername();
         this.commentContents = commentDto.getCommentContents();

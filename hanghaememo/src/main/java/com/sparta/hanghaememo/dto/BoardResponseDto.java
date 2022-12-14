@@ -17,7 +17,7 @@ public class BoardResponseDto {
     private String content;
     private String title;
     private List<CommentResponseDto> commentList;
-
+    private int boardCount;
     public BoardResponseDto(Board board) {
         this.id = board.getId();
         this.username = board.getUsername();
@@ -30,6 +30,7 @@ public class BoardResponseDto {
         this.title = board.getTitle();
         this.content = board.getContent();
         this.username = board.getUsername();
+        this.boardCount = commentList.size();
         this.commentList = commentList;
 
     }
