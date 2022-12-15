@@ -86,9 +86,11 @@ Spring Security를 적용한 나만의 항해 블로그 백엔드 서버 만들�
   - 회원가입 시 username과 password의 구성이 알맞지 않으면 에러메시지와 statusCode: 400을 Client에 반환하기
 
 ## API 명세서
-![](../1.png)
-![](../2.png)
-![](../3.png)
+![1](https://user-images.githubusercontent.com/97332044/207792667-8eeae0c4-39ac-44e7-95ff-974758f66e76.png)
+![2](https://user-images.githubusercontent.com/97332044/207792683-161ba036-5b94-4da2-b243-3e11e9e15487.png)
+![3](https://user-images.githubusercontent.com/97332044/207792691-50d86db5-bf5f-4b29-82fb-adbde418d477.png)
+
+
 
 ## ERD
-![](../Untitled.png)
+![Untitled](https://user-images.githubusercontent.com/97332044/207792698-792da803-0944-4792-8880-54efef92fb72.png)
